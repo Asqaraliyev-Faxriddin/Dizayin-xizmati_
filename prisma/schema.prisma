@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // eski usul endi Prisma 6 da ishlaydi
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id        String @id @default(uuid())
+  email     String @unique
+  FirstName String
+  LastName  String
+  avatar_url String?
+  password  String
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Rasmlar   Rasmlar[]
+  RasmlarAcces RasmlarAccess[]
+
+  @@map("users")
+}
+
+model Rasmlar {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String
+  title     String?
+  isPaid    Boolean  @default(false) // 👈 PULLIK yoki FREE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  User User @relation(fields: [userId], references: [id])
+  accesses RasmlarAccess[]
+
+  @@map("rasmlar")
+}
+
+model RasmlarAccess {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  rasmId    Int
+  grantedBy String // admin ID
+  createdAt DateTime @default(now())
+
+  user User    @relation(fields: [userId], references: [id])
+  rasm Rasmlar @relation(fields: [rasmId], references: [id])
+
+  @@unique([userId, rasmId]) // bitta rasmga bitta ruxsat
+  @@map("rasmlar_access")
+}
