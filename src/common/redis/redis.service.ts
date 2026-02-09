@@ -18,7 +18,7 @@ export class RedisService implements OnModuleInit{
   }
 
   async set(key:string,code:string,ttl:number){
-    return this.client.set(key,code,'EX',ttl);
+    return this.client.set(key,code,'PX',ttl);
   }
 
   async get(key:string){

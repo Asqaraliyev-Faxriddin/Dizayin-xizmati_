@@ -9,6 +9,8 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  Param,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -20,6 +22,8 @@ import axios from 'axios';
 
 
 import { createClient } from '@supabase/supabase-js';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/role';
 
 interface ImgBBResponse {
   data: {
@@ -100,4 +104,25 @@ export class ProfileController {
   remove(@Req() req) {
     return this.profileService.DeleteProfile(req.user.id);
   }
+
+
+  @Roles("ADMIN")
+  @UseGuards(AuthGuard,RolesGuard)
+  @Get("usersAll")
+  usersAll(){
+    return this.profileService.usersAll()
+
+}
+
+  // ✅ Delete profile
+  @Roles("ADMIN")
+  @UseGuards(AuthGuard,RolesGuard)
+  @Delete("user/:id")
+  removeUser(@Param("id",ParseUUIDPipe) id:string) {
+    return this.profileService.userDelete(id);
+  }
+
+
+
+
 }

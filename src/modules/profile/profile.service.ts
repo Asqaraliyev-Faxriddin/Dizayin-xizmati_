@@ -82,4 +82,40 @@ export class ProfileService {
     const { password, ...userWithoutPassword } = updatedUser;
     return userWithoutPassword;
   }
+
+
+  async usersAll(){
+    let data = await this.prisma.user.findMany()
+
+    return {
+      message:"Users fetched successfully",
+      data
+    }
+  }
+
+
+  async userDelete(id:string){
+
+    let olduser = await this.prisma.user.findFirst({
+      where:{
+        id
+      }
+    })
+
+    if(!olduser) throw new NotFoundException("User not found")
+
+      await this.prisma.user.delete({
+        where:{
+          id
+        }
+      })
+
+    return {
+      message:"User deleted successfully"
+
+
+
+  }
+}
+
 }

@@ -93,7 +93,7 @@ export class VerificationService {
         }
 
         const otp = generateOtp();
-        await this.redis.set(key, JSON.stringify(otp), secToMills(6));
+        await this.redis.set(key, JSON.stringify(otp), secToMills(60));
         await this.smsService.sendSMS(
           this.getMessage(type, otp),
           email,
